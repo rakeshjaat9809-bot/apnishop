@@ -1,204 +1,386 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#6d28d9">
-  <title>Apni Shop | Online Shopping</title>
-  <style>
-    :root { --brand:#6d28d9; --brand2:#8b5cf6; --ink:#171717; --muted:#666; --bg:#f7f7fb; --line:#e8e5ef; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:Arial,Helvetica,sans-serif; color:var(--ink); background:var(--bg); }
-    button,input,select { font:inherit; }
-    button { cursor:pointer; }
-    .topbar { background:var(--brand); color:white; text-align:center; padding:9px 12px; font-size:13px; }
-    header { background:#fff; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:10; }
-    .head { max-width:1180px; margin:auto; padding:14px 18px; display:flex; gap:14px; align-items:center; }
-    .logo { color:var(--brand); font-size:25px; font-weight:800; white-space:nowrap; }
-    .search { flex:1; display:flex; gap:8px; }
-    .search input { width:100%; min-width:0; border:1px solid #ddd6e8; border-radius:10px; padding:12px 13px; outline-color:var(--brand2); }
-    .cart-btn { border:0; background:var(--brand); color:white; border-radius:10px; padding:12px 14px; font-weight:700; white-space:nowrap; }
-    nav { max-width:1180px; margin:auto; padding:0 18px 12px; display:flex; gap:9px; overflow:auto; }
-    .chip { border:1px solid #e4d9fb; background:#f5f0ff; color:#5520ae; padding:8px 13px; border-radius:22px; white-space:nowrap; }
-    .chip.active { background:var(--brand); color:white; }
-    main { max-width:1180px; margin:20px auto; padding:0 18px 40px; }
-    .hero { background:linear-gradient(115deg,#ede9fe,#fae8ff); border-radius:20px; padding:26px; display:grid; grid-template-columns:1.3fr 1fr; align-items:center; gap:15px; overflow:hidden; }
-    .hero small { color:#6d28d9; font-weight:800; letter-spacing:1px; }
-    .hero h1 { margin:10px 0; font-size:clamp(26px,4vw,42px); line-height:1.12; }
-    .hero p { color:#5d526c; line-height:1.5; }
-    .hero .hero-art { text-align:center; font-size:clamp(65px,12vw,120px); }
-    .section-head { display:flex; align-items:end; justify-content:space-between; gap:12px; margin:27px 0 14px; }
-    h2 { margin:0; font-size:23px; }
-    .section-head span { color:var(--muted); font-size:13px; }
-    .grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:15px; }
-    .card { background:white; border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
-    .product-image { width:100%; aspect-ratio:4/4.3; display:flex; align-items:center; justify-content:center; background:#f2eff7; font-size:75px; }
-    .card-body { padding:12px; display:flex; flex-direction:column; flex:1; }
-    .category { color:var(--brand); text-transform:uppercase; font-size:10px; letter-spacing:.7px; font-weight:800; }
-    .name { margin:6px 0; font-weight:700; line-height:1.3; }
-    .price-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:4px 0 11px; }
-    .price { font-weight:800; font-size:18px; }
-    .old { color:#888; text-decoration:line-through; font-size:12px; }
-    .add { margin-top:auto; border:1px solid var(--brand); color:var(--brand); background:white; padding:10px; border-radius:9px; font-weight:700; }
-    .add:hover { background:#f4edff; }
-    .empty { background:white; border:1px dashed #c9bddf; border-radius:14px; padding:28px; text-align:center; color:var(--muted); grid-column:1/-1; }
-    footer { text-align:center; color:#777; font-size:13px; padding:24px 18px; border-top:1px solid var(--line); background:white; }
-    .overlay { display:none; position:fixed; inset:0; background:#0007; z-index:30; }
-    .overlay.show { display:block; }
-    .drawer { position:absolute; right:0; top:0; height:100%; width:min(440px,100%); background:white; padding:20px; overflow:auto; box-shadow:-5px 0 25px #0002; }
-    .drawer-head { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; }
-    .close { border:0; background:#f1edf7; border-radius:8px; padding:8px 12px; }
-    .cart-item { display:grid; grid-template-columns:54px 1fr auto; gap:10px; padding:14px 0; border-bottom:1px solid var(--line); align-items:center; }
-    .cart-emoji { background:#f3eff9; border-radius:9px; height:54px; display:grid; place-items:center; font-size:29px; }
-    .qty { display:flex; gap:7px; align-items:center; margin-top:6px; }
-    .qty button { border:1px solid #ddd; background:white; border-radius:6px; width:25px; height:25px; }
-    .remove { color:#a11; background:none; border:0; font-size:12px; padding:5px 0; }
-    .total { display:flex; justify-content:space-between; font-weight:800; font-size:18px; padding:18px 0; }
-    .checkout { width:100%; border:0; border-radius:10px; padding:13px; background:#16a34a; color:white; font-weight:800; }
-    .note { color:#777; font-size:12px; line-height:1.5; }
-    .customer { display:grid; gap:9px; margin:10px 0 14px; }
-    .customer input,.customer textarea { width:100%; border:1px solid #ddd6e8; border-radius:9px; padding:11px; }
-    .customer textarea { resize:vertical; min-height:70px; }
-    @media(max-width:760px) { .head { flex-wrap:wrap; gap:10px; } .logo { font-size:22px; } .search { order:3; flex-basis:100%; } .hero { grid-template-columns:1fr .6fr; padding:20px; } .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } .product-image { font-size:62px; } .card-body { padding:10px; } .name { font-size:14px; } }
-    @media(max-width:380px) { .hero { grid-template-columns:1fr; } .hero-art { display:none; } .cart-btn { margin-left:auto; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ApniShop - Online Shopping</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5fa;
+  color: #222;
+}
+
+header {
+  background: #6c35d8;
+  color: white;
+  padding: 18px 12px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0 0 12px;
+}
+
+.search {
+  width: 95%;
+  max-width: 600px;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.hero {
+  margin: 15px;
+  padding: 25px 15px;
+  background: linear-gradient(135deg, #6c35d8, #a879ff);
+  color: white;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.hero h2 {
+  margin-top: 0;
+}
+
+.categories {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  overflow-x: auto;
+}
+
+.categories button {
+  flex-shrink: 0;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+}
+
+.categories button.active {
+  background: #6c35d8;
+  color: white;
+}
+
+h2.section-title {
+  margin: 18px 12px;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px #00000010;
+  padding-bottom: 12px;
+}
+
+.product-image {
+  width: 100%;
+  height: 135px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #eee7ff;
+  font-size: 65px;
+}
+
+.card h3 {
+  font-size: 15px;
+  margin: 10px;
+}
+
+.price {
+  margin: 8px 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #6c35d8;
+}
+
+.card button {
+  display: block;
+  width: calc(100% - 20px);
+  margin: 10px;
+  padding: 10px 5px;
+  background: #6c35d8;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.cart {
+  margin: 15px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-item button {
+  padding: 5px 9px;
+  border: none;
+  border-radius: 5px;
+  background: #eee7ff;
+}
+
+.checkout {
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px;
+  background: #159447;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+footer {
+  background: #24163f;
+  color: white;
+  padding: 22px 12px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.empty {
+  padding: 20px;
+  text-align: center;
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 700px) {
+  .products {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .product-image {
+    height: 180px;
+  }
+}
+</style>
 </head>
+
 <body>
-  <div class="topbar">✨ आपकी अपनी ऑनलाइन शॉप — आसान शॉपिंग, शानदार कीमतें</div>
-  <header>
-    <div class="head">
-      <div class="logo">Apni<span style="color:#222">Shop</span></div>
-      <div class="search"><input id="searchInput" type="search" placeholder="प्रोडक्ट खोजें, जैसे T-shirt..." aria-label="प्रोडक्ट खोजें"></div>
-      <button class="cart-btn" id="openCart">🛒 Cart (<span id="cartCount">0</span>)</button>
-    </div>
-    <nav id="categories">
-      <button class="chip active" data-category="All">सभी प्रोडक्ट</button>
-      <button class="chip" data-category="Women">महिलाओं के कपड़े</button>
-      <button class="chip" data-category="Men">पुरुषों के कपड़े</button>
-      <button class="chip" data-category="Accessories">एक्सेसरीज़</button>
-      <button class="chip" data-category="Home">होम</button>
-    </nav>
-  </header>
 
-  <main>
-    <section class="hero">
-      <div>
-        <small>WELCOME TO APNISHOP</small>
-        <h1>आपकी पसंद,<br>आपके बजट में 💜</h1>
-        <p>हर दिन के लिए शानदार प्रोडक्ट खोजें। अपना पसंदीदा सामान कार्ट में जोड़ें और WhatsApp से ऑर्डर भेजें।</p>
-        <button class="cart-btn" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">अभी खरीदारी करें →</button>
-      </div>
-      <div class="hero-art" aria-hidden="true">🛍️👗👟</div>
-    </section>
+<header>
+  <h1>🛍️ ApniShop</h1>
+  <div>आपकी अपनी ऑनलाइन शॉप</div>
+  <br>
+  <input
+    class="search"
+    id="search"
+    type="search"
+    placeholder="🔍 प्रोडक्ट खोजें..."
+  >
+</header>
 
-    <div class="section-head">
-      <h2 id="productHeading">लोकप्रिय प्रोडक्ट</h2>
-      <span id="productCount"></span>
-    </div>
-    <section class="grid" id="products" aria-live="polite"></section>
-  </main>
+<section class="hero">
+  <h2>ApniShop में आपका स्वागत है! 🎉</h2>
+  <p>अपनी पसंद का सामान चुनें और शॉपिंग करें।</p>
+  <b>हर दिन नई पसंद, आपकी अपनी दुकान!</b>
+</section>
 
-  <footer>© <span id="year"></span> ApniShop · डेमो स्टोर · प्रोडक्ट की कीमत और जानकारी विक्रेता से पुष्टि करें।</footer>
+<div class="categories" id="categories"></div>
 
-  <div class="overlay" id="cartOverlay" role="dialog" aria-modal="true" aria-label="शॉपिंग कार्ट">
-    <aside class="drawer">
-      <div class="drawer-head"><h2>आपका कार्ट 🛒</h2><button class="close" id="closeCart">बंद करें ✕</button></div>
-      <div id="cartItems"></div>
-      <div class="total"><span>कुल रकम</span><span id="cartTotal">₹0</span></div>
-      <h3>ऑर्डर की जानकारी</h3>
-      <div class="customer">
-        <input id="customerName" placeholder="आपका नाम *" autocomplete="name">
-        <input id="customerPhone" placeholder="मोबाइल नंबर *" inputmode="tel" autocomplete="tel">
-        <textarea id="customerAddress" placeholder="पूरा डिलीवरी पता *" autocomplete="street-address"></textarea>
-      </div>
-      <button class="checkout" id="whatsappOrder">WhatsApp पर ऑर्डर भेजें</button>
-      <p class="note">यह डेमो WhatsApp में ऑर्डर का मैसेज तैयार करता है। ऑर्डर भेजने के लिए नीचे कोड में अपना WhatsApp नंबर सेट करना होगा। यह अपने-आप पेमेंट नहीं लेता।</p>
-    </aside>
-  </div>
+<h2 class="section-title">🛒 हमारे प्रोडक्ट</h2>
 
-  <script>
-    // अपनी असली प्रोडक्ट जानकारी, कीमत और फोटो यहाँ बदलें।
-    const products = [
-      {id:1,name:"Women’s Printed Kurti",category:"Women",price:499,oldPrice:799,emoji:"👗",bg:"#fce7f3"},
-      {id:2,name:"Classic Men’s T-Shirt",category:"Men",price:299,oldPrice:499,emoji:"👕",bg:"#dbeafe"},
-      {id:3,name:"Everyday Sneakers",category:"Men",price:799,oldPrice:1199,emoji:"👟",bg:"#e0f2fe"},
-      {id:4,name:"Stylish Handbag",category:"Accessories",price:599,oldPrice:899,emoji:"👜",bg:"#fef3c7"},
-      {id:5,name:"Women’s Casual Dress",category:"Women",price:699,oldPrice:999,emoji:"👚",bg:"#fae8ff"},
-      {id:6,name:"Classic Wrist Watch",category:"Accessories",price:449,oldPrice:699,emoji:"⌚",bg:"#dcfce7"},
-      {id:7,name:"Comfort Cushion Set",category:"Home",price:349,oldPrice:499,emoji:"🛋️",bg:"#ffedd5"},
-      {id:8,name:"Men’s Casual Shirt",category:"Men",price:649,oldPrice:899,emoji:"👔",bg:"#e0e7ff"}
-    ];
-    let activeCategory = "All";
-    let cart = JSON.parse(localStorage.getItem("apnishop-cart") || "{}");
-    const money = n => "₹" + Number(n).toLocaleString("en-IN");
-    const categoryNames = {All:"लोकप्रिय प्रोडक्ट",Women:"महिलाओं के कपड़े",Men:"पुरुषों के कपड़े",Accessories:"एक्सेसरीज़",Home:"होम प्रोडक्ट"};
+<div class="products" id="products"></div>
 
-    function renderProducts() {
-      const query = document.getElementById("searchInput").value.trim().toLowerCase();
-      const list = products.filter(p => (activeCategory === "All" || p.category === activeCategory) &&
-        (p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)));
-      document.getElementById("productHeading").textContent = query ? "खोज के नतीजे" : categoryNames[activeCategory];
-      document.getElementById("productCount").textContent = `${list.length} प्रोडक्ट`;
-      const root = document.getElementById("products");
-      root.innerHTML = list.length ? list.map(p => `
-        <article class="card">
-          <div class="product-image" style="background:${p.bg}">${p.emoji}</div>
-          <div class="card-body">
-            <div class="category">${p.category}</div>
-            <div class="name">${p.name}</div>
-            <div class="price-row"><span class="price">${money(p.price)}</span><span class="old">${money(p.oldPrice)}</span></div>
-            <button class="add" onclick="addToCart(${p.id})">＋ कार्ट में जोड़ें</button>
+<section class="cart" id="cart">
+  <h2>🛒 आपका कार्ट</h2>
+  <div id="cartItems">अभी कार्ट खाली है।</div>
+  <h3 id="total">कुल: ₹0</h3>
+  <button class="checkout" onclick="checkout()">
+    WhatsApp से ऑर्डर करें
+  </button>
+</section>
+
+<footer>
+  <h3>ApniShop ❤️</h3>
+  <p>आपकी अपनी ऑनलाइन शॉपिंग वेबसाइट</p>
+  <p>सभी कीमतें डेमो के लिए हैं।</p>
+</footer>
+
+<script>
+const products = [
+  {id:1, name:"Men's T-Shirt", price:299, category:"कपड़े", icon:"👕"},
+  {id:2, name:"Women's Dress", price:499, category:"कपड़े", icon:"👗"},
+  {id:3, name:"Jeans", price:599, category:"कपड़े", icon:"👖"},
+  {id:4, name:"Sports Shoes", price:799, category:"जूते", icon:"👟"},
+  {id:5, name:"Slippers", price:199, category:"जूते", icon:"🩴"},
+  {id:6, name:"Handbag", price:399, category:"बैग", icon:"👜"},
+  {id:7, name:"School Bag", price:599, category:"बैग", icon:"🎒"},
+  {id:8, name:"Watch", price:499, category:"एक्सेसरीज़", icon:"⌚"},
+  {id:9, name:"Sunglasses", price:199, category:"एक्सेसरीज़", icon:"🕶️"},
+  {id:10, name:"Earphones", price:299, category:"इलेक्ट्रॉनिक्स", icon:"🎧"},
+  {id:11, name:"Beauty Kit", price:349, category:"ब्यूटी", icon:"💄"},
+  {id:12, name:"Teddy Bear", price:299, category:"खिलौने", icon:"🧸"}
+];
+
+let selectedCategory = "सभी";
+let cart = {};
+
+const categories = [
+  "सभी",
+  ...new Set(products.map(p => p.category))
+];
+
+function renderCategories() {
+  document.getElementById("categories").innerHTML =
+    categories.map(category => `
+      <button
+        class="${category === selectedCategory ? "active" : ""}"
+        onclick="selectCategory('${category}')">
+        ${category}
+      </button>
+    `).join("");
+}
+
+function selectCategory(category) {
+  selectedCategory = category;
+  renderCategories();
+  renderProducts();
+}
+
+function renderProducts() {
+  const search = document.getElementById("search")
+    .value.trim().toLowerCase();
+
+  const filtered = products.filter(p =>
+    (selectedCategory === "सभी" ||
+      p.category === selectedCategory) &&
+    p.name.toLowerCase().includes(search)
+  );
+
+  document.getElementById("products").innerHTML =
+    filtered.length
+      ? filtered.map(p => `
+          <div class="card">
+            <div class="product-image">${p.icon}</div>
+            <h3>${p.name}</h3>
+            <div class="price">₹${p.price}</div>
+            <button onclick="addToCart(${p.id})">
+              🛒 कार्ट में डालें
+            </button>
           </div>
-        </article>`).join("") : '<div class="empty">कोई प्रोडक्ट नहीं मिला। दूसरा नाम खोजें।</div>';
-    }
-    function saveCart() { localStorage.setItem("apnishop-cart", JSON.stringify(cart)); }
-    function addToCart(id) { cart[id] = (cart[id] || 0) + 1; saveCart(); renderCart(); }
-    function changeQty(id,delta) { cart[id] = (cart[id] || 0) + delta; if(cart[id] <= 0) delete cart[id]; saveCart(); renderCart(); }
-    function cartProducts() { return Object.entries(cart).map(([id,qty]) => ({product:products.find(p=>p.id===Number(id)),qty})).filter(x=>x.product); }
-    function renderCart() {
-      const items = cartProducts();
-      document.getElementById("cartCount").textContent = items.reduce((s,x)=>s+x.qty,0);
-      document.getElementById("cartItems").innerHTML = items.length ? items.map(({product:p,qty})=>`
-        <div class="cart-item">
-          <div class="cart-emoji">${p.emoji}</div>
-          <div><strong>${p.name}</strong><div>${money(p.price)} × ${qty}</div>
-            <div class="qty"><button aria-label="मात्रा घटाएँ" onclick="changeQty(${p.id},-1)">−</button><span>${qty}</span><button aria-label="मात्रा बढ़ाएँ" onclick="changeQty(${p.id},1)">+</button></div>
-          </div>
-          <button class="remove" onclick="changeQty(${p.id},-${qty})">हटाएँ</button>
-        </div>`).join("") : '<div class="empty" style="margin-top:16px">आपका कार्ट खाली है। पहले कोई प्रोडक्ट जोड़ें। 🛍️</div>';
-      document.getElementById("cartTotal").textContent = money(items.reduce((s,x)=>s+x.product.price*x.qty,0));
-    }
-    document.getElementById("categories").addEventListener("click",e=>{
-      const btn=e.target.closest("[data-category]"); if(!btn)return;
-      activeCategory=btn.dataset.category;
-      document.querySelectorAll(".chip").forEach(b=>b.classList.toggle("active",b===btn));
-      renderProducts();
-    });
-    document.getElementById("searchInput").addEventListener("input",renderProducts);
-    const overlay=document.getElementById("cartOverlay");
-    document.getElementById("openCart").onclick=()=>{renderCart();overlay.classList.add("show");};
-    document.getElementById("closeCart").onclick=()=>overlay.classList.remove("show");
-    overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.classList.remove("show");});
-    document.getElementById("whatsappOrder").onclick=()=>{
-      const items=cartProducts();
-      if(!items.length){alert("पहले कार्ट में प्रोडक्ट जोड़ें।");return;}
-      const name=document.getElementById("customerName").value.trim();
-      const phone=document.getElementById("customerPhone").value.trim();
-      const address=document.getElementById("customerAddress").value.trim();
-      if(!name||!phone||!address){alert("कृपया नाम, मोबाइल नंबर और पूरा पता भरें।");return;}
-      const total=items.reduce((s,x)=>s+x.product.price*x.qty,0);
-      const lines=items.map(({product:p,qty})=>`• ${p.name} × ${qty} = ${money(p.price*qty)}`).join("\n");
-      const message=`नमस्ते! मुझे यह ऑर्डर करना है:\n\n${lines}\n\nकुल: ${money(total)}\n\nनाम: ${name}\nमोबाइल: ${phone}\nपता: ${address}`;
-      // अपना WhatsApp नंबर नीचे 91 के साथ लिखें, उदाहरण: 919876543210
-      const WHATSAPP_NUMBER = "91XXXXXXXXXX";
-      if(WHATSAPP_NUMBER.includes("X")) {
-        alert("पहले HTML कोड में WHATSAPP_NUMBER की जगह अपना WhatsApp नंबर लिखें। उदाहरण: 919876543210");
-        return;
-      }
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,"_blank");
-    };
-    document.getElementById("year").textContent=new Date().getFullYear();
-    renderProducts(); renderCart();
-  </script>
+        `).join("")
+      : '<div class="empty">कोई प्रोडक्ट नहीं मिला।</div>';
+}
+
+function addToCart(id) {
+  cart[id] = (cart[id] || 0) + 1;
+  renderCart();
+}
+
+function changeQuantity(id, amount) {
+  cart[id] += amount;
+
+  if (cart[id] <= 0) {
+    delete cart[id];
+  }
+
+  renderCart();
+}
+
+function renderCart() {
+  const items = Object.entries(cart);
+
+  document.getElementById("cartItems").innerHTML =
+    items.length
+      ? items.map(([id, qty]) => {
+          const p = products.find(p => p.id === Number(id));
+
+          return `
+            <div class="cart-item">
+              <span>${p.icon} ${p.name}</span>
+              <span>
+                <button onclick="changeQuantity(${p.id}, -1)">−</button>
+                ${qty}
+                <button onclick="changeQuantity(${p.id}, 1)">+</button>
+              </span>
+              <b>₹${p.price * qty}</b>
+            </div>
+          `;
+        }).join("")
+      : "अभी कार्ट खाली है।";
+
+  const total = items.reduce((sum, [id, qty]) => {
+    const p = products.find(p => p.id === Number(id));
+    return sum + p.price * qty;
+  }, 0);
+
+  document.getElementById("total").textContent = "कुल: ₹" + total;
+}
+
+function checkout() {
+  const items = Object.entries(cart);
+
+  if (!items.length) {
+    alert("पहले कार्ट में प्रोडक्ट डालें!");
+    return;
+  }
+
+  const phone = prompt(
+    "दुकानदार का WhatsApp नंबर डालें, देश के कोड सहित।\nउदाहरण: 919876543210"
+  );
+
+  if (!phone) return;
+
+  if (!/^\d{10,15}$/.test(phone)) {
+    alert("कृपया सही WhatsApp नंबर डालें।");
+    return;
+  }
+
+  let message = "Namaste! Mujhe ApniShop se order karna hai:\n\n";
+
+  let total = 0;
+
+  items.forEach(([id, qty]) => {
+    const p = products.find(p => p.id === Number(id));
+    message += `${p.name} x ${qty} = ₹${p.price * qty}\n`;
+    total += p.price * qty;
+  });
+
+  message += `\nTotal: ₹${total}\n`;
+  message += "Please confirm product availability and delivery charges.";
+
+  window.open(
+    "https://wa.me/" + phone + "?text=" + encodeURIComponent(message),
+    "_blank"
+  );
+}
+
+document.getElementById("search")
+  .addEventListener("input", renderProducts);
+
+renderCategories();
+renderProducts();
+renderCart();
+</script>
+
 </body>
 </html>
